@@ -1,0 +1,9 @@
+*.pyc
+.DS_Store
+.env
+.env.docker
+.idea
+venv
+__pycache__
+/cookie
+/docker/vpn/*
