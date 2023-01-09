@@ -3,3 +3,4 @@ python-anticaptcha==0.7.1
 beautifulsoup4==4.9.3
 python-dotenv==0.18.0
 selenium==3.141.0
+twilio==7.2.0

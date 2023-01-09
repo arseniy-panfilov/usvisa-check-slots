@@ -7,3 +7,4 @@ venv
 __pycache__
 /cookie
 /docker/vpn/*
+.vscode/

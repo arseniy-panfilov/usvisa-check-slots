@@ -1,15 +1,13 @@
 import logging
 from datetime import datetime
 
-from src.config import TARGET_DATE
+from src.config import TARGET_DATE, TWILIO_CONFIG
+from src.twilio import TwilioClient
 
 
 def check_results(name, results):
     logging.info(f"Inspecting dates for {name}...")
-    dates = [
-        datetime.strptime(record["date"], "%Y-%m-%d").date()
-        for record in results
-    ]
+    dates = [datetime.strptime(record["date"], "%Y-%m-%d").date() for record in results]
     dates.sort()
     if not dates:
         return
@@ -23,20 +21,5 @@ def check_results(name, results):
 
 
 def notify_new_slot(name, slot_date):
-    """
-    Do whatever you want with the new slot.
-    E.g. you can create a Slack org and send yourself a notification:
-
-        msg = f"<@U01234567> NEW SLOT AVAILABLE!\n\n*{name}: {slot_date}*"
-        logging.warning(msg)
-        requests.post(
-            "https://hooks.slack.com/services/FOO/BAR/YOUR_ENDPOINT",
-            json={"text": msg},
-        )
-
-    Or send an SMS to yourself?
-    Or maybe even make the bot book the slot automatically?
-
-    Your choice.
-    """
-    raise NotImplementedError
+    client = TwilioClient(TWILIO_CONFIG)
+    client.send_message(f"NEW SLOT AVAILABLE!\n{name}: {slot_date}")
