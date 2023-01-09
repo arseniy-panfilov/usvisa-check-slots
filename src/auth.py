@@ -40,7 +40,6 @@ def set_cookie(cookie):
 
 
 def delete_cookie():
-    logging.info("DELETE cookie")
     os.remove(COOKIE_PATH)
 
 

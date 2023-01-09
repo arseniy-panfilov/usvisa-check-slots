@@ -1,3 +1,4 @@
+import logging
 from json import JSONDecodeError
 
 import requests
@@ -7,20 +8,20 @@ from src.check_results import check_results
 from src.config import ACCOUNT_ID, SESSION_COOKIE
 
 headers = {
-    'Connection': 'keep-alive',
-    'sec-ch-ua': '"Chromium";v="92", " Not A;Brand";v="99", "Google Chrome";v="92"',
-    'Accept': '*/*',
-    'sec-ch-ua-mobile': '?0',
-    'User-Agent': USER_AGENT,
-    'X-Requested-With': 'XMLHttpRequest',
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Dest': 'empty',
-    'Referer': 'https://ais.usvisa-info.com/en-ca/niv/schedule/30323861/appointment',
-    'Accept-Language': 'en-US,en;q=0.9',
+    "Connection": "keep-alive",
+    "sec-ch-ua": '"Chromium";v="92", " Not A;Brand";v="99", "Google Chrome";v="92"',
+    "Accept": "*/*",
+    "sec-ch-ua-mobile": "?0",
+    "User-Agent": USER_AGENT,
+    "X-Requested-With": "XMLHttpRequest",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-Mode": "cors",
+    "Sec-Fetch-Dest": "empty",
+    "Referer": "https://ais.usvisa-info.com/en-ca/niv/schedule/30323861/appointment",
+    "Accept-Language": "en-US,en;q=0.9",
 }
 
-CITIES_TO_CHECK = [(91, "Montreal"), (92, "Ottawa"), (93, "Quebec")]
+CITIES_TO_CHECK = [(92, "Ottawa"), (93, "Quebec")]
 
 
 def make_request():
@@ -34,11 +35,13 @@ def make_request():
         if r.ok:
             set_cookie(r.cookies.get(SESSION_COOKIE))
         else:
+            logging.info(f"Deleting cookie: response status was {response.status_code}")
             return delete_cookie()
 
         try:
             result = r.json()
-        except JSONDecodeError:
+        except JSONDecodeError as err:
+            logging.info(f"Deleting cookie: got json encoding error {err}")
             return delete_cookie()
 
         check_results(name, result)
