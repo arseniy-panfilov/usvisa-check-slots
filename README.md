@@ -6,6 +6,8 @@ Their website uses cookies for authentication, so there are two modes of operati
 - Obtain authentication cookie;
 - Check available slots.
 
+Once a new slot is found, you should receive an SMS (you'll need to create a free Twilio account).
+
 ## Authentication
 
 I tried many different things and hacks to log in to the website in a truly "script" way - including services to bypass captchas,
@@ -59,16 +61,22 @@ cp .env.example .env
 
 ### Env variables
 
+- `ACCOUNT_ID`: group ID from the website. You can see it in the url, e.g. `https://ais.usvisa-info.com/en-ca/niv/schedule/<ACCOUNT_ID>/continue_actions`
 - `CHROMEDRIVER_PATH`: path to the Chrome driver, e.g. `/usr/local/bin/chromedriver` or wherever you place it;
 - `USVISA_COOKIE_PATH`: where to store auth cookie, can be any location e.g. `cookie/cookie.txt`;
 - `USVISA_USER / USVISA_PASSWORD`: credentials to login on https://ais.usvisa-info.com/en-ca/niv/users/sign_in
 - `USVISA_CURRENT_DATE`: date in `YYYY-MM-DD` format. If you already have an appointment, put its date here so that bot doesn't bother you with irrelevant dates;
 - `AUTO_REFRESH_AUTH`: whether to automatically refresh auth cookie. Set to `1` if you're running everything on your personal laptop; set to `0` if you're running `check` mode on a VPS or something like that - it won't be able to obtain auth cookie anyway.
 
+Twilio configuration:
+- `TWILIO_ACCOUNT_SID`
+- `TWILIO_AUTH_TOKEN`
+- `TWILIO_TO_NUM`
+- `TWILIO_FROM_NUM`
+
 ### Tweaking the code
 
-1. You'll need to implement `src.check_results.notify_new_slot` function. I've left a commented out example of what it can be for Slack, but you can send an sms, email or any other notification you like;
-2. You may want to modify cities list in `src.run.CITIES_TO_CHECK`. I think Montreal doesn't actually take appointments now, and I had the most luck with Ottawa.
+You may want to modify cities list in `src.run.CITIES_TO_CHECK`. I think Montreal doesn't actually take appointments now, and I had most luck with Ottawa.
 
 ### Running 
 
@@ -86,3 +94,59 @@ and then export it to your dedicated server, e.g.:
 scp cookie/cookie.txt yourvps:/path/to/cookie.txt
 ```
 On the server itself, repeat all the steps above, but make sure to set `AUTO_REFRESH_AUTH=0` in the `.env` file. This mode also doesn't require `USVISA_USER / USVISA_PASSWORD` so you can leave them empty. 
+
+Example script to export cookie:
+```
+#!/bin/bash
+
+venv/bin/python main.py
+scp cookie/cookie.txt <YOUR_SSH>:/home/apps/usvisa/cookie/cookie.txt
+echo "Cookie exported"
+```
+
+### Setting up `launchd` on a macOS machine
+
+Create a `.plist` file for the service, e.g.
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
+    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.anon.usvisa-watcher</string>
+    <key>WorkingDirectory</key>
+    <string>/Users/anon/dev/usvisa/</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>./export-cookie.sh</string>
+    </array>
+    <key>StartInterval</key>
+    <integer>1800</integer>
+    <key>StandardOutPath</key>
+    <string>/tmp/usvisa.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/usvisa.log</string>
+</dict>
+</plist>
+```
+
+Then run:
+```
+cp com.custom.usvisa-watcher.plist ~/Library/LaunchAgents/com.anon.usvisa-watcher.plist
+launchctl load -w ~/Library/LaunchAgents/com.anon.usvisa-watcher.plist
+```
+
+Make sure it's added:
+```
+➜  ~ launchctl list | grep usvisa
+-	0	com.anon.usvisa-watcher
+```
+
+To run immediately:
+```
+launchctl kickstart gui/501/com.anon.usvisa-watcher
+```
+
+
+
