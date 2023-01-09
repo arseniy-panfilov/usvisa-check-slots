@@ -10,6 +10,7 @@ def check_results(name, results):
     dates = [datetime.strptime(record["date"], "%Y-%m-%d").date() for record in results]
     dates.sort()
     if not dates:
+        logging.warning(f"No dates available in {name}")
         return
 
     earliest = dates[0]
@@ -17,7 +18,7 @@ def check_results(name, results):
         logging.info(f"Found better date in {name}: {earliest}.")
         notify_new_slot(name, earliest)
     else:
-        logging.warning("Nothing new.")
+        logging.warning(f"Nothing new in {name} (earliest was {earliest})")
 
 
 def notify_new_slot(name, slot_date):
