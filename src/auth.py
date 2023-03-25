@@ -52,19 +52,10 @@ def selenium_auth():
     driver = get_driver()
 
     # Bypass reCAPTCHA
-    driver.get("https://ais.usvisa-info.com/en-ca/niv")
-    time.sleep(1)
-    a = driver.find_element_by_xpath('//a[@class="down-arrow bounce"]')
-    a.click()
+    driver.get("https://ais.usvisa-info.com/en-ca/niv/users/sign_in")
     time.sleep(1)
 
     logging.info("start sign")
-    href = driver.find_element_by_xpath(
-        '//*[@id="header"]/nav/div[2]/div[1]/ul/li[3]/a'
-    )
-    href.click()
-    time.sleep(1)
-    Wait(driver, 60).until(EC.presence_of_element_located((By.NAME, "commit")))
 
     logging.info("click bounce")
     a = driver.find_element_by_xpath('//a[@class="down-arrow bounce"]')
