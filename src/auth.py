@@ -15,7 +15,7 @@ from selenium.webdriver.support.ui import WebDriverWait as Wait
 from src.config import (CHROMEDRIVER_PATH, COOKIE_PATH, PASSWORD, SESSION_COOKIE,
                         AUTO_REFRESH_AUTH, USER)
 
-USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/116.0.5845.96 Safari/537.36'
 logging.basicConfig(format="[%(asctime)s] %(message)s", level=logging.INFO)
 
 
