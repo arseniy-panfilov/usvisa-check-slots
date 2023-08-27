@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 const parseArgs = require('minimist');
 const fs = require('fs');
-
+process.chdir(__dirname);
 require('dotenv').config();
 
 (async () => {
