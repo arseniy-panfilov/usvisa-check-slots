@@ -8,3 +8,4 @@ __pycache__
 /cookie
 /docker/vpn/*
 .vscode/
+node_modules/
